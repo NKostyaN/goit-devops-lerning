@@ -81,7 +81,7 @@ resource "aws_eks_node_group" "general" {
   ]
 
   # Ігнорує зміни в desired_size, щоб уникнути конфліктів
-#   lifecycle {
-#     ignore_changes = [scaling_config[0].desired_size]
-#   }
+  lifecycle {
+    ignore_changes = [scaling_config[0].desired_size]
+  }
 }
