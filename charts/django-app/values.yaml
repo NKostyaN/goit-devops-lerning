@@ -1,0 +1,21 @@
+image:
+  repository: 849990178824.dkr.ecr.eu-west-1.amazonaws.com/goit-lern-nkos-lesson-8-9-ecr
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: LoadBalancer
+  port: 8000
+
+ingress:
+  enabled: false
+
+config:
+  POSTGRES_HOST: db 
+  POSTGRES_PORT: 5432
+  POSTGRES_USER: db_user
+  POSTGRES_DB: django_db
+  
+secrets:
+  POSTGRES_PASSWORD: db_password
+  
