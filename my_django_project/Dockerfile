@@ -4,6 +4,7 @@ FROM python:3.11-slim
 # Встановлюємо змінні оточення для коректної роботи Python в Docker
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
+ENV DJANGO_ALLOWED_HOSTS='*'
 
 # Робоча директорія всередині контейнера
 WORKDIR /app
