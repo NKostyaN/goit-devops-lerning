@@ -1,7 +1,6 @@
 controller:
   admin:
     username: admin
-    password: admin123
 
   serviceType: LoadBalancer
   servicePort: 80
@@ -64,7 +63,7 @@ controller:
                           url("${github_repo}")
                           credentials("github-token")
                         }
-                        branches("*/lesson-8-9")
+                        branches("*/lesson-db-module")
                       }
                     }
                   }

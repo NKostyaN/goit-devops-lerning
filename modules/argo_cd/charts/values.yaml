@@ -5,7 +5,7 @@ applications:
     source:
       repoURL: ${github_repo}
       path: charts/django-app
-      targetRevision: lesson-8-9
+      targetRevision: lesson-db-module
       helm:
         valueFiles:
           - values.yaml

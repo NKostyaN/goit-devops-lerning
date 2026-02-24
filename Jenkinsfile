@@ -45,10 +45,13 @@ spec:
     }
   }
 
+  triggers {
+    githubPush()
+  }
 
   environment {
     ECR_REGISTRY = "849990178824.dkr.ecr.eu-west-1.amazonaws.com" 
-    IMAGE_NAME   = "goit-lern-nkos-lesson-8-9-ecr"
+    IMAGE_NAME   = "goit-lern-nkos-lesson-db-module-ecr"
     IMAGE_TAG    = "${BUILD_NUMBER}"
 
     COMMIT_EMAIL = "jenkins@localhost"
@@ -77,7 +80,7 @@ spec:
         container('git') {
           withCredentials([usernamePassword(credentialsId: 'github-token', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PAT')]) {
             sh '''
-              git clone -b lesson-8-9 https://$GIT_USERNAME:$GIT_PAT@github.com/NKostyaN/goit-devops-lerning.git goit-devops-lerning
+              git clone -b lesson-db-module https://$GIT_USERNAME:$GIT_PAT@github.com/NKostyaN/goit-devops-lerning.git goit-devops-lerning
               cd goit-devops-lerning
 
               sed -i "s/tag: .*/tag: $IMAGE_TAG/" charts/django-app/values.yaml
@@ -88,7 +91,7 @@ spec:
               git add charts/django-app/values.yaml
               git commit -m "Update image tag to $IMAGE_TAG"
               
-              git push origin lesson-8-9
+              git push origin lesson-db-module
             '''
           }
         }
