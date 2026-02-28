@@ -19,9 +19,11 @@ output "cluster_certificate_authority_data" {
 }
 
 output "oidc_provider_arn" {
-  value = aws_iam_openid_connect_provider.oidc.arn
+  description = "ARN (Amazon Resource Name) OIDC-провайдера кластера EKS"
+  value       = aws_iam_openid_connect_provider.oidc.arn
 }
 
 output "oidc_provider_url" {
-  value = aws_iam_openid_connect_provider.oidc.url
+  description = "URL-адреса OIDC-провайдера кластера EKS"
+  value       = aws_iam_openid_connect_provider.oidc.url
 }

@@ -1,4 +1,5 @@
 variable "namespace" {
+  description = "Kubernetes namespace for Jenkins"
   default = "jenkins"
 }
 

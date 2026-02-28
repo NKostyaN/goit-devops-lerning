@@ -1,8 +1,10 @@
 variable "namespace" {
+  description = "Kubernetes namespace for Argo CD"
   default = "argocd"
 }
 
 variable "path_to_charts" {
+  description = "Path to cahrts for Argo CD"
   type = string
 }
 

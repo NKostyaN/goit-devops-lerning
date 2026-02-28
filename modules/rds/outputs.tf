@@ -2,38 +2,32 @@
 output "rds_endpoint" {
   description = "Endpoint звичайної RDS бази даних"
   value       = var.use_aurora ? null : aws_db_instance.standard[0].endpoint
-#   value       = aws_db_instance.standard[0].endpoint
 }
 
 output "rds_address" {
   description = "Адреса звичайної RDS бази даних"
   value       = var.use_aurora ? null : aws_db_instance.standard[0].address
-#   value       = aws_db_instance.standard[0].address
 }
 
 output "rds_port" {
   description = "Порт звичайної RDS бази даних"
   value       = var.use_aurora ? null : aws_db_instance.standard[0].port
-#   value       = aws_db_instance.standard[0].port
 }
 
 # Aurora Outputs
 output "aurora_cluster_endpoint" {
   description = "Endpoint Aurora кластера (writer)"
   value       = var.use_aurora ? aws_rds_cluster.aurora[0].endpoint : null
-#   value       = aws_rds_cluster.aurora[0].endpoint
 }
 
 output "aurora_reader_endpoint" {
   description = "Endpoint Aurora кластера (reader)"
   value       = var.use_aurora ? aws_rds_cluster.aurora[0].reader_endpoint : null
-#   value       = aws_rds_cluster.aurora[0].reader_endpoint
 }
 
 output "aurora_cluster_port" {
   description = "Порт Aurora кластера"
   value       = var.use_aurora ? aws_rds_cluster.aurora[0].port : null
-#   value       = aws_rds_cluster.aurora[0].port
 }
 
 # Common Outputs

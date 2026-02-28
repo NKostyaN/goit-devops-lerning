@@ -1,17 +1,19 @@
-# Створення гнучкого Terraform-модуля для баз даних
+# Фінальний проєкт: Розгортання інфраструктури DevOps на AWS
 
-Цей проєкт підіймає **Aurora Cluster** або звичайну **RDS instance** на основі значення `use_aurora`\
-Автоматично створює:
-- DB Subnet Group
-- Security Group
-- Parameter Group для обраного типу БД
+Цей проєкт автоматично робить наступне:
+-  Розгортає Kubernetes кластер (EKS) з підтримкою CI/CD
+-  Інтегрує Jenkins для автоматизації збірки та деплою
+-  Інсталює Argo CD для управління застосунками
+-  Налаштовує бази даних (RDS або Aurora), в залежності від змінних
+-  Організовую реєстр контейнерів (ECR)
+-  Підключає моніторинг з Prometheus та Grafana
   
 Працює з мінімальними змінами змінних і підтримує багаторазове використання.
 
 ## Структура проєкту
 
 ```
-Lesson-db-module/
+final-project/
 │
 ├── main.tf                # Головний файл для підключення модулів
 ├── backend.tf             # Налаштування бекенду для стейтів S3 + DynamoDB
@@ -26,8 +28,9 @@ Lesson-db-module/
 │   ├── vpc/               # Модуль для VPC
 │   ├── ecr/               # Модуль для ECR
 │   ├── eks/               # Модуль для Kubernetes кластера
-│   ├── jenkins/           # Модуль для Helm-установки Jenkins
-│   └── argo_cd/           # Модуль для Helm-установки Argo CD
+│   ├── jenkins/           # Модуль для Jenkins
+│   ├── argo_cd/           # Модуль для Argo CD
+│   └── monitoring/        # Модуль для Моніторигу (Prometheus та Grafana)
 │
 ├── charts/
 │   └── django-app/        # Helm chart для застосунку
@@ -39,22 +42,24 @@ Lesson-db-module/
 
 ## Команди для роботи
 
-Спочатку створіть файл `terraform.tfvars` в корені проекту з логіном та токеном від **GitHub** акаунту:
+Спочатку створіть файл `terraform.tfvars` в корені проєкту з логіном та токеном від **GitHub** акаунту:
 ```bash
 github_username = "ваш-логін"
 github_token    = "ваш-токен"
 ```
-Створіть тільки інфраструктуру (VPC, EKS, ECR, S3, RDS):
+Створіть інфраструктуру:
 ```bash
-terraform apply -target=module.vpc -target=module.eks -target=module.ecr -target=module.s3_backend -target=module.rds
+terraform apply
 ```
-Коли кластер створено, налаштуйте **Kubernetes**:
+Коли інфраструктуру створено, налаштуйте **Kubernetes**:
 ```bash
 aws eks update-kubeconfig --region eu-west-1 --name goit-lern-nkos-cluster
 ```
-та запустіть повний **apply** (**Terraform** побачить кластер і зможе встановити **Helm-чарти**, **Jenkins** та **ArgoCD**):
+Перевірка стану ресурсів:
 ```bash
-terraform apply
+kubectl get all -n jenkins
+kubectl get all -n argocd
+kubectl get all -n monitoring
 ```
 
 ## Налаштування та параметри RDS модуля
@@ -141,46 +146,38 @@ engine_version_cluster        = "8.0.mysql_aurora.3.04.0"
 parameter_group_family_aurora = "aurora-mysql8.0"
 ```
 
-### RDS
-![rds](screens/rds.png)
-### Aurora
-![aurora](screens/aurora.png)
-### Subnet groups
-![subnets](screens/subnets.png)
-### Parameter groups
-![parameters](screens/parameters.png)
-### Option group
-![options](screens/options.png)
-
 ## Перевірка роботи Jenkins
 
-Для отримання `<EXTERNAL-IP>` запустити команду:
-
-```bash
-kubectl get svc -n jenkins
-```
 Для отримання паролю запустити команду:
 ```bash
 kubectl exec -n jenkins -it svc/jenkins -c jenkins -- /bin/cat /run/secrets/additional/chart-admin-password && echo
 ```
-
-Перейти по `http://<EXTERNAL-IP>` адресі, ввести логін `admin` і пароль, який отримали вище та запустити білд **goit-django-docker** пайплайну
-### Jenkins
+Щоб отримати тимчасовий доступ через портфорвардинг:
+```bash
+kubectl port-forward svc/jenkins 8080:8080 -n jenkins
+```
+Перейти за посиланням, ввести логін `admin` і пароль, який отримали вище та запустити білд **goit-django-docker** пайплайну
+```bash
+http://localhost:8080
+```
+#### Jenkins
 ![jenkins](screens/jenkins.png)
 
 ## Перевірка роботи Argo CD
 
-Для отримання `<EXTERNAL-IP>` запустити команду:
-
-```bash
-kubectl get svc -n argocd
-```
 Для отримання паролю запустити команду:
 ```bash
 kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d && echo
 ```
-Перейти по `http://<EXTERNAL-IP>` адресі, ввести логін `admin` і пароль, який отримали вище та перевірити **django-app** статус. Має бути **Synced, Healthy**
-### ArgoCD
+Щоб отримати тимчасовий доступ через портфорвардинг:
+```bash
+kubectl port-forward svc/argocd-server 8081:443 -n argocd
+```
+Перейти за посиланням, ввести логін `admin` і пароль, який отримали вище та перевірити **django-app** статус. Має бути **Synced, Healthy**
+```bash
+http://localhost:8080
+```
+#### ArgoCD
 ![argocd](screens/argocd.png)
 
 ## Перевірка роботи Django
@@ -191,6 +188,31 @@ kubectl get svc -n default django-app-django
 ```
 Перейти по `http://<EXTERNAL-IP>` адресі.
 
-### Django
+#### Django
 ![django](screens/django.png)
 
+## Перевірка роботи Grafana
+
+Щоб отримати тимчасовий доступ через портфорвардинг:
+```bash
+kubectl port-forward svc/grafana 3000:80 -n monitoring
+```
+Перейти за посиланням, ввести логін `admin` і пароль `admin123`
+```bash
+http://localhost:3000
+```
+#### Grafana
+![grafana](screens/grafana.png)
+
+## Перевірка роботи Prometheus
+
+Щоб отримати тимчасовий доступ через портфорвардинг:
+```bash
+kubectl port-forward svc/prometheus-server 9090:80 -n monitoring
+```
+Перейти за посиланням:
+```bash
+http://localhost:9090
+```
+#### Prometheus
+![prometheus](screens/prometheus.png)

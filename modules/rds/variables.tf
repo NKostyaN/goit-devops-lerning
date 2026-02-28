@@ -4,101 +4,128 @@ variable "name" {
 }
 
 variable "engine" {
+  description = "Тип рушія бази даних для звичайного RDS (наприклад, postgres, mysql)"
   type        = string
   default     = "postgres"
 }
+
 variable "engine_cluster" {
-  type    = string
-  default = "aurora-postgresql"
+  description = "Тип рушія бази даних для кластера Aurora (наприклад, aurora-postgresql, aurora-mysql)"
+  type        = string
+  default     = "aurora-postgresql"
 }
+
 variable "aurora_replica_count" {
-  type    = number
-  default = 1
+  description = "Кількість Read Replica інстансів для кластера Aurora"
+  type        = number
+  default     = 1
 }
 
 variable "aurora_instance_count" {
-  type    = number
-  default = 2 # 1 primary + 1 replica
+  description = "Загальна кількість інстансів у кластері Aurora (1 primary + репліки)"
+  type        = number
+  default     = 2
 }
+
 variable "engine_version" {
+  description = "Версія рушія бази даних для звичайного RDS"
   type        = string
   default     = "14.7"
 }
 
 variable "instance_class" {
+  description = "Тип (клас) EC2-інстансу для бази даних (наприклад, db.t3.micro, db.t3.medium)"
   type        = string
   default     = "db.t3.micro"
 }
 
 variable "allocated_storage" {
+  description = "Обсяг виділеного дискового простору (у ГБ) для звичайного RDS-інстансу"
   type        = number
   default     = 20
 }
 
 variable "db_name" {
-  type = string
+  description = "Назва початкової бази даних, яка буде створена автоматично"
+  type        = string
 }
 
 variable "username" {
-  type = string
+  description = "Ім'я головного адміністратора (master user) бази даних"
+  type        = string
 }
 
 variable "password" {
-  type      = string
-  sensitive = true
+  description = "Пароль головного адміністратора бази даних"
+  type        = string
+  sensitive   = true
 }
 
 variable "vpc_id" {
-  type = string
+  description = "ID існуючої VPC, де буде розгорнута база даних"
+  type        = string
 }
 
 variable "subnet_private_ids" {
-  type = list(string)
+  description = "Список ID приватних підмереж"
+  type        = list(string)
 }
 
 variable "subnet_public_ids" {
-  type = list(string)
+  description = "Список ID публічних підмереж"
+  type        = list(string)
 }
 
 variable "publicly_accessible" {
-  type    = bool
-  default = false
+  description = "Визначає, чи буде база даних мати публічну IP-адресу для доступу з інтернету"
+  type        = bool
+  default     = false
 }
 
 variable "multi_az" {
-  type    = bool
-  default = false
+  description = "Увімкнення режиму Multi-AZ (кілька зон доступності) для звичайного RDS для відмовостійкості"
+  type        = bool
+  default     = false
 }
 
 variable "parameters" {
-  type    = map(string)
-  default = {}
+  description = "Карта кастомних параметрів для конфігурації Parameter Group бази даних"
+  type        = map(string)
+  default     = {}
 }
 
 variable "use_aurora" {
-  type    = bool
-  default = false
+  description = "Перемикач для вибору: true - створювати кластер Aurora, false - звичайний RDS-інстанс"
+  type        = bool
+  default     = false
 }
 
 variable "backup_retention_period" {
-  type    = string
-  default = ""
+  description = "Кількість днів для зберігання автоматичних резервних копій (від 0 до 35)"
+  type        = string
+  default     = ""
 }
 
 variable "tags" {
-  type    = map(string)
-  default = {}
+  description = "Карта тегів, які будуть призначені всім створеним ресурсам"
+  type        = map(string)
+  default     = {}
 }
 
 variable "parameter_group_family_aurora" {
-  type    = string
-  default = "aurora-postgresql15"
+  description = "Сімейство групи параметрів для кластера Aurora (має відповідати версії рушія)"
+  type        = string
+  default     = "aurora-postgresql15"
 }
+
 variable "engine_version_cluster" {
-  type    = string
-  default = "15.3"
+  description = "Версія рушія бази даних для кластера Aurora"
+  type        = string
+  default     = "15.3"
 }
+
 variable "parameter_group_family_rds" {
-  type    = string
-  default = "postgres15"
+  description = "Сімейство групи параметрів для звичайного RDS-інстансу (має відповідати версії рушія)"
+  type        = string
+  default     = "postgres15"
 }
